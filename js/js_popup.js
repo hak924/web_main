@@ -1,54 +1,47 @@
-var close_time; // 시간 정보
-var close_time2 = 10; // 10초 설정
-clearTimeout(close_time); // 재호출 정지
-close_time= setTimeout("close_window()", 10000);
-// 1/1000 초 지정, 바로 시작
-show_time(); // 실시간 시간 보여주기
-function show_time(){
-let divClock = document.getElementById('Time');
-divClock.innerText = close_time2; // 10초 삽입 시작
-close_time2--; // 1초씩 감소
-setTimeout(show_time, 1000); //1초마다 갱신
-}
-function close_window() { // 함수 정의
-window.close(); // 윈도우 닫기
-}
+// js_popup.js
 
-function pop_up() {
-    window.open("../popup/popup.html", "팝업테스트", "width=400, height=300, top=10, left=10");
+var close_time;        // 타이머 ID 저장용
+var close_time2 = 10;  // 10초 카운트다운 시작값
+
+// 타이머 초기화 및 시작
+clearTimeout(close_time);
+close_time = setTimeout(close_window, 10000); // 10초 후 자동 닫기
+
+// 1초마다 남은 시간 표시 함수
+function show_time() {
+  let divClock = document.getElementById('Time');
+  if (divClock) {
+    divClock.innerText = close_time2; // 남은 시간 표시
+    close_time2--;                    // 1초씩 감소
+    if (close_time2 >= 0) {
+      setTimeout(show_time, 1000);   // 1초마다 재호출
     }
-    function over(obj) {
-        obj.src="image/logo.svg";
-        }
-        function out(obj) {
-        obj.src="image/logo_2.png";
-        }
-        const over = (obj) => {
-        obj.src = "image/LOGO.png";
-        };
-            
-            const search_message = () => {
-            const c = '검색을 수행합니다';
-            alert(c);
-            };
+  }
+}
 
-            function setCookie(name, value, expiredays) {
-                var date = new Date();
-                date.setDate(date.getDate() + expiredays);
-                document.cookie = escape(name) + "=" + escape(value) + ";
-                expires=" + date.toUTCString() + "; path=/";
-                }
-                function getCookie(name) {
-                    var cookie = document.cookie;
-                    console.log("쿠키를 요청합니다.");
-                    if (cookie != "") {
-                    var cookie_array = cookie.split("; ");
-                    for ( var index in cookie_array) {
-                    var cookie_name = cookie_array[index].split("=");
-                    if (cookie_name[0] == "popupYN") {
-                    return cookie_name[1];
-                    }
-                    }
-                    }
-                    return ;
-                    }
+// 창 닫기 함수
+function close_window() {
+  window.close();
+}
+
+// 팝업 열기 함수
+function pop_up() {
+  window.open("../popup/popup.html", "팝업테스트", "width=600,height=400,top=100,left=100");
+}
+
+// 이미지 오버 효과 함수
+function over(obj) {
+  obj.src = "image/logo.svg";
+}
+
+// 이미지 아웃 효과 함수
+function out(obj) {
+  obj.src = "image/logo_2.png";
+}
+
+// 화살표 함수 버전 이미지 오버 효과
+const overArrow = (obj) => {
+  obj.src = "image/LOGO.png";
+};
+
+export { close_window, pop_up, over, out, overArrow, show_time };

@@ -1,18 +1,26 @@
-<div class="checkbox mb-3">
-    <label>
-    <input type="checkbox" value="remember-me" id="idSaveCheck"> 아이디 기억
-    </label>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>로그인 상세</title>
+</head>
+<body>
+  <h1>로그인 상세</h1>
+  <form id="loginForm">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" required />
+    <br />
+    <label for="password">비밀번호:</label>
+    <input type="password" id="password" name="password" required />
+    <br />
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" id="idSaveCheck" value="remember-me" /> 아이디 저장
+      </label>
     </div>
-   
-    // 전역 변수 추가, 맨 위 위치
- const idsave_check = document.getElementById('idSaveCheck’);
-  // 검사 마무리 단계 쿠키 저장, 최하단 submit 이전
- 
-if(idsave_check.checked == true) { // 아이디 체크 o
-alert("쿠키를 저장합니다.", emailValue);
-setCookie("id", emailValue, 1); // 1일 저장
-alert("쿠키 값 :" + emailValue);
-}
-else{ // 아이디 체크 x
-setCookie("id", emailValue.value, 0); //날짜를 0 - 쿠키 삭제
-}
+    <button type="submit">로그인</button>
+  </form>
+
+  <script type="module" src="../js/login.js"></script>
+</body>
+</html>

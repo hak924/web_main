@@ -1,74 +1,84 @@
-const check_input = () => {
-    const loginForm = document.getElementById('login_form');
-    const loginBtn = document.getElementById('login_btn');
-    const emailInput = document.getElementById('typeEmailX');
-    const passwordInput = document.getElementById('typePasswordX');
-    
-    const c = '아이디, 패스워드를 체크합니다';
-    alert(c);
-    
-    const emailValue = emailInput.value.trim();
-    const passwordValue = passwordInput.value.trim();
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js" integrity="sha512-/CUtA84sWWqWEBejNrrtWa7Yc4cth3Ome2ymvCKOo9YcZ4sh98tndUy4LutE2xGcAgD4fyz16y+gSyJdGCB5ww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
-    const sanitizedPassword = check_xss(passwordInput);
-    // check_xss 함수로 비밀번호 Sanitize
-    const sanitizedEmail = check_xss(emailInput);
-    // check_xss 함수로 비밀번호 Sanitize
-    
-    if (emailValue === '') {
-       alert('이메일을 입력하세요.');
-       return false;
-       }
-    if (passwordValue === '') {
-       alert('비밀번호를 입력하세요.');
-       return false;
-       }
-    console.log('이메일:', emailValue);
-    console.log('비밀번호:', passwordValue);
-    loginForm.submit();
-    };
-    document.getElementById("login_btn").addEventListener('click', check_input);
-    <form method="get" action="/login/index_login.html" id="login_form">
-<div data-mdb-input-init class="form-outline form-white mb-4">
-  <https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js&gt;
-    <input type="email" id="typeEmailX" class="form-control form-control-lg" name="id" />
-    <label class="form-label" for="typeEmailX">이메일</label>
-</div>
-<div data-mdb-input-init class="form-outline form-white mb-4">
-    <input type="password" id="typePasswordX" class="form-control form-control-lg" name="password" />
-    <label class="form-label" for="typePasswordX">패스워드</label>
-</div>
-<p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">패스워드 찾기</a></p>
-<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" id="login_btn" type="submit">로그인</button>
-</form>
-if (emailValue.length < 5)
-    {alert('아이디는 최소 5글자 이상 입력해야 합니다.');
-    return false;
+// login.js
+
+import { setCookie, getCookie, deleteCookie } from './js_cookie.js';
+import { check_xss } from './js_xss.js';
+import { setSession } from './js_session.js';
+
+const MAX_FAILS = 3;
+const FAIL_COOKIE = 'login_fail_count';
+
+function login_failed() {
+  let count = parseInt(getCookie(FAIL_COOKIE)) || 0;
+  count++;
+  setCookie(FAIL_COOKIE, count, 1);
+  return count >= MAX_FAILS;
 }
-    if (passwordValue.length < 12) 
-    {alert('비밀번호는 반드시 12글자 이상 입력해야 합니다.');
-    return false;
+
+function check_input(email, password) {
+  const safeEmail = check_xss(email);
+  const safePassword = check_xss(password);
+  if (!safeEmail || !safePassword) return false;
+  if (email.length < 5 || password.length < 6) return false;
+  return true;
 }
-    const hasSpecialChar = passwordValue.match(/[!},@#$%^&*()_+\-
-    =\[\],{};':"\\|,.<>\/?]+/) !== null;)
-    if (!hasSpecialChar) {
-    alert('패스워드는 특수문자를 1개 이상 포함해야 합니다.');
+
+async function login(email, password) {
+  if (!check_input(email, password)) {
+    alert('입력값이 올바르지 않습니다.');
     return false;
+  }
+  if (parseInt(getCookie(FAIL_COOKIE)) >= MAX_FAILS) {
+    alert('로그인 제한 상태입니다.');
+    return false;
+  }
+  if (email === 'test@example.com' && password === 'password123') {
+    deleteCookie(FAIL_COOKIE);
+    await setSession('user', { email, loggedIn: true });
+    alert('로그인 성공');
+    return true;
+  } else {
+    if (login_failed()) alert('로그인 제한 초과');
+    else alert('로그인 실패');
+    return false;
+  }
 }
-    if (!sanitizedEmail) {
-    // Sanitize된 비밀번호 사용
-    return false;
+
+function handleIdSave(emailValue) {
+  const idSaveCheck = document.getElementById('idSaveCheck');
+  if (idSaveCheck && idSaveCheck.checked) {
+    alert("쿠키를 저장합니다.");
+    setCookie("id", emailValue, 1);
+  } else {
+    setCookie("id", "", 0);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  if (!loginForm) return;
+
+  const savedId = getCookie("id");
+  if (savedId) {
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+      emailInput.value = savedId;
+      const idSaveCheck = document.getElementById('idSaveCheck');
+      if (idSaveCheck) idSaveCheck.checked = true;
     }
-    if (!sanitizedPassword) {
-    // Sanitize된 비밀번호 사용
-    return false;
+  }
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (await login(email, password)) {
+      handleIdSave(email);
+      // 로그인 성공 후 추가 처리 가능
     }
-    
-    const hasUpperCase = passwordValue.match(/[A-Z]+/) !== null;
-    const hasLowerCase = passwordValue.match(/[a-z]+/) !== null;
-    if (!hasUpperCase || !hasLowerCase) {
-    alert('패스워드는 대소문자를 1개 이상 포함해야 합니다.');
-    return false;
-}
+  });
+});
+
+export { login, login_failed, check_input };
+
+  
